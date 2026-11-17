@@ -1,0 +1,82 @@
+openapi: 3.0.3
+info:
+  title: Orders API
+  description: API REST para la gestión de órdenes
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Servidor de desarrollo
+paths:
+  /orders:
+    get:
+      summary: Obtener todas las órdenes
+      description: Retorna una lista de todas las órdenes disponibles en el sistema
+      operationId: getAllOrders
+      tags:
+        - Orders
+      responses:
+        '200':
+          description: Lista de órdenes obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderResponseDto'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: status
+          in: query
+          description: Filtrar órdenes por estado
+          required: false
+          schema:
+            $ref: '#/components/schemas/OrderStatus'
+components:
+  schemas:
+    OrderResponseDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador único de la orden
+        customerId:
+          type: string
+          description: Identificador del cliente
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        totalAmount:
+          type: number
+          format: decimal
+          description: Monto total de la orden
+        createdAt:
+          type: string
+          format: date-time
+          description: Fecha de creación de la orden
+    OrderStatus:
+      type: string
+      enum:
+        - PENDING
+        - PROCESSING
+        - SHIPPED
+        - DELIVERED
+        - CANCELLED
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
